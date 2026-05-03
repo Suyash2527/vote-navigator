@@ -34,6 +34,7 @@ async function generateWithFallback(prompt: string) {
         return parsed;
       } catch (err: any) {
         lastError = err;
+        console.warn(`Journey Attempt ${attempt} with ${modelName} failed: ${err.message}`);
         if (err?.status === 429 || err?.status === 503) {
           await new Promise(r => setTimeout(r, 1000 * attempt));
           continue;
@@ -59,12 +60,30 @@ async function generateWithFallback(prompt: string) {
 
 export async function POST(req: Request) {
   try {
-    const { formData } = await req.json();
+    const body = await req.json();
+    console.log("Journey API Request Body:", JSON.stringify(body));
+    const { formData } = body;
+
+    if (!formData) {
+       console.error("Missing formData in request");
+       return NextResponse.json({ error: "Missing formData" }, { status: 400 });
+    }
 
     // CACHE LOOKUP
     const cacheKey = `journey_${JSON.stringify(formData)}`.toLowerCase().replace(/[^a-z0-9]/g, "_").slice(0, 100);
-    const cachedData = await getCache(cacheKey);
-    if (cachedData) return NextResponse.json(cachedData);
+    console.log("Journey Cache Key:", cacheKey);
+    
+    let cachedData = null;
+    try {
+      cachedData = await getCache(cacheKey);
+    } catch (cacheErr) {
+      console.error("Cache Read Error (Non-Fatal):", cacheErr);
+    }
+
+    if (cachedData) {
+      console.log("Journey Cache Hit!");
+      return NextResponse.json(cachedData);
+    }
 
     const prompt = `
       You are an expert Indian Electoral System Architect. 
@@ -91,14 +110,23 @@ export async function POST(req: Request) {
       - If user missed the registration deadline for a specific election, suggest 'Registration for future polls'.
     `;
 
+    console.log("Invoking Gemini for Journey...");
     const data = await generateWithFallback(prompt);
+    console.log("Journey Generation Successful");
     
     // Save to Cache
-    await setCache(cacheKey, data);
+    try {
+      await setCache(cacheKey, data);
+    } catch (cacheErr) {
+      console.error("Cache Write Error (Non-Fatal):", cacheErr);
+    }
 
     return NextResponse.json(data);
-  } catch (error) {
-    console.error("Critical Error in Journey API:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } catch (error: any) {
+    console.error("CRITICAL ERROR in Journey API:", error.message, error.stack);
+    return NextResponse.json({ 
+      error: "Internal Server Error",
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    }, { status: 500 });
   }
 }
