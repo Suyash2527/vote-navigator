@@ -154,6 +154,29 @@ export default function Home() {
               </motion.div>
             </section>
 
+            {/* --- MISSION BLUEPRINTS (JOURNEY TYPES) --- */}
+            <div className="mb-20">
+              <div className="flex items-center justify-between mb-10">
+                <h2 className="text-3xl font-black tracking-tight">Mission <span className="text-primary">Blueprints</span></h2>
+                <div className="h-[1px] flex-1 mx-8 bg-white/5" />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  { type: "General Elector", icon: "🇮🇳", desc: "Standard protocol for residents.", color: "from-orange-500/10 to-transparent" },
+                  { type: "Overseas (NRI)", icon: "🌐", desc: "Protocols for Indian citizens abroad.", color: "from-blue-500/10 to-transparent" },
+                  { type: "Service Voter", icon: "🎖️", desc: "Special missions for armed forces.", color: "from-emerald-500/10 to-transparent" }
+                ].map((blueprint, i) => (
+                  <Link key={i} href={`/journey?type=${blueprint.type.toLowerCase().split(" ")[0]}`} className={`p-6 rounded-[2rem] glass border-white/5 hover:border-primary/30 transition-all group relative overflow-hidden bg-gradient-to-br ${blueprint.color}`}>
+                    <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">{blueprint.icon}</div>
+                    <h4 className="font-black text-sm mb-2 uppercase tracking-widest">{blueprint.type}</h4>
+                    <p className="text-[10px] text-foreground/40 leading-relaxed">{blueprint.desc}</p>
+                    <ArrowRight className="absolute bottom-6 right-6 w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-all" />
+                  </Link>
+                ))}
+              </div>
+            </div>
+
             {/* --- MISSION PACKS --- */}
             <div className="mb-20">
               <div className="flex items-center justify-between mb-10">
