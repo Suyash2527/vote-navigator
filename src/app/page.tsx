@@ -10,7 +10,8 @@ import {
 import { useGame } from "@/lib/GameContext";
 
 export default function Home() {
-  const { xp, level, rank } = useGame();
+  const { gameState } = useGame();
+  const { xp, level, rank } = gameState;
 
   const MISSION_PACKS = [
     {
