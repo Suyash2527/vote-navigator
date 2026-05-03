@@ -100,7 +100,7 @@ export default function StatesPage() {
                              High Priority Sector
                            </span>
                            <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[9px] font-black uppercase tracking-[0.2em]">
-                             {state.seats} Lok Sabha Seats
+                             {selectedState.seats} Lok Sabha Seats
                            </span>
                         </div>
                         <h2 className="text-6xl font-black mb-2 tracking-tighter">{selectedState.name}</h2>
