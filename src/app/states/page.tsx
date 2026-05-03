@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Search, MapPin, Building2, Users, 
   History, Landmark, ArrowRight, ShieldCheck,
-  Zap, Info, ExternalLink, Globe
+  Zap, Info, ExternalLink, Globe, FileText
 } from "lucide-react";
 
 const STATE_DATA = [
@@ -75,10 +75,12 @@ export default function StatesPage() {
   );
 
   return (
-    <div className="min-h-screen pt-24 pb-20 px-4">
+    <div className="min-h-screen pt-24 pb-20 px-4 font-['Outfit']">
+      <div className="mesh-gradient" />
+      
       <div className="max-w-7xl mx-auto">
         {/* --- HEADER --- */}
-        <div className="mb-12">
+        <header className="mb-12">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -93,16 +95,20 @@ export default function StatesPage() {
             <input 
               type="text"
               placeholder="Search for a state or union territory..."
+              aria-label="Search states"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="input-field w-full pl-12 py-4 text-lg font-medium"
+              className="input-field w-full pl-12 py-4 text-lg font-medium focus-ring"
             />
           </div>
-        </div>
+        </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <main className="grid grid-cols-1 lg:grid-cols-3 gap-8" role="main">
           {/* --- STATES LIST --- */}
-          <div className="lg:col-span-1 space-y-4 max-h-[70vh] overflow-y-auto pr-4 custom-scrollbar">
+          <nav 
+            className="lg:col-span-1 space-y-4 max-h-[70vh] overflow-y-auto pr-4 custom-scrollbar"
+            aria-label="States list"
+          >
             {filteredStates.map((state, idx) => (
               <motion.button
                 key={state.name}
@@ -110,9 +116,10 @@ export default function StatesPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }}
                 onClick={() => setSelectedState(state)}
-                className={`w-full text-left p-5 rounded-2xl border transition-all duration-300 ${
+                aria-pressed={selectedState?.name === state.name}
+                className={`w-full text-left p-5 rounded-2xl border transition-all duration-300 focus-ring ${
                   selectedState?.name === state.name 
-                    ? "glass border-primary bg-primary/10" 
+                    ? "glass border-primary bg-primary/10 shadow-[0_0_20px_rgba(255,107,53,0.1)]" 
                     : "glass border-white/5 hover:border-white/20"
                 }`}
               >
@@ -121,16 +128,14 @@ export default function StatesPage() {
                     <h3 className="font-black text-xl mb-1">{state.name}</h3>
                     <p className="text-xs font-bold text-foreground/40 uppercase tracking-wider">{state.capital}</p>
                   </div>
-                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
-                    <ArrowRight className={`w-5 h-5 transition-transform ${selectedState?.name === state.name ? "text-primary translate-x-1" : "text-foreground/20"}`} />
-                  </div>
+                  <ArrowRight className={`w-5 h-5 transition-transform ${selectedState?.name === state.name ? "text-primary translate-x-1" : "text-foreground/20"}`} />
                 </div>
               </motion.button>
             ))}
-          </div>
+          </nav>
 
           {/* --- INTELLIGENCE DOSSIER --- */}
-          <div className="lg:col-span-2">
+          <section className="lg:col-span-2" aria-live="polite">
             <AnimatePresence mode="wait">
               {selectedState ? (
                 <motion.div
@@ -138,10 +143,9 @@ export default function StatesPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="glass rounded-[2rem] p-8 md:p-12 border-primary/20 relative overflow-hidden h-full"
+                  className="glass rounded-[2.5rem] p-8 md:p-12 border-primary/20 relative overflow-hidden h-full shadow-2xl"
                 >
-                  {/* Decorative Elements */}
-                  <div className="absolute top-0 right-0 p-8 opacity-5">
+                  <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
                     <Landmark className="w-48 h-48" />
                   </div>
 
@@ -149,86 +153,94 @@ export default function StatesPage() {
                     <div className="flex flex-wrap items-start justify-between gap-6 mb-10">
                       <div>
                         <div className="flex items-center gap-3 mb-4">
-                           <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
+                           <span className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[9px] font-black uppercase tracking-[0.2em]">
                              High Priority Sector
-                           </div>
-                           <div className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest">
-                             {selectedState.totalSeats} Seats
-                           </div>
+                           </span>
+                           <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[9px] font-black uppercase tracking-[0.2em]">
+                             {selectedState.totalSeats} LS Seats
+                           </span>
                         </div>
-                        <h2 className="text-5xl font-black mb-2">{selectedState.name}</h2>
+                        <h2 className="text-5xl font-black mb-2 tracking-tighter">{selectedState.name}</h2>
                         <p className="text-xl text-foreground/60 font-medium">Headquarters: {selectedState.capital}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-xs font-black text-foreground/40 uppercase tracking-widest mb-1">Status</p>
+                        <p className="text-[10px] font-black text-foreground/40 uppercase tracking-[0.2em] mb-1">Dossier Status</p>
                         <div className="flex items-center gap-2 justify-end">
                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                           <span className="font-black text-emerald-500">MISSION ACTIVE</span>
+                           <span className="font-black text-emerald-500 text-xs tracking-widest">LIVE DATA FEED</span>
                         </div>
                       </div>
                     </div>
 
-                    <p className="text-lg text-foreground/80 leading-relaxed mb-12 max-w-2xl">
+                    <p className="text-lg text-foreground/80 leading-relaxed mb-12 max-w-2xl font-medium">
                       {selectedState.desc}
                     </p>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                      <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
+                      <div className="bg-white/5 rounded-2xl p-6 border border-white/5 hover:border-primary/30 transition-colors">
                         <div className="flex items-center gap-3 mb-4">
                           <Building2 className="w-5 h-5 text-primary" />
-                          <h4 className="font-black text-xs uppercase tracking-widest text-foreground/40">Current Government</h4>
+                          <h4 className="font-black text-[9px] uppercase tracking-[0.2em] text-foreground/40">Incumbent Government</h4>
                         </div>
                         <p className="text-2xl font-black">{selectedState.government}</p>
                       </div>
-                      <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
+                      <div className="bg-white/5 rounded-2xl p-6 border border-white/5 hover:border-blue-500/30 transition-colors">
                         <div className="flex items-center gap-3 mb-4">
                           <Users className="w-5 h-5 text-blue-500" />
-                          <h4 className="font-black text-xs uppercase tracking-widest text-foreground/40">Chief Minister</h4>
+                          <h4 className="font-black text-[9px] uppercase tracking-[0.2em] text-foreground/40">Chief Minister</h4>
                         </div>
                         <p className="text-2xl font-black">{selectedState.chiefMinister}</p>
                       </div>
-                      <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
+                      <div className="bg-white/5 rounded-2xl p-6 border border-white/5 hover:border-yellow-500/30 transition-colors">
                         <div className="flex items-center gap-3 mb-4">
                           <Zap className="w-5 h-5 text-yellow-500" />
-                          <h4 className="font-black text-xs uppercase tracking-widest text-foreground/40">Major Parties</h4>
+                          <h4 className="font-black text-[9px] uppercase tracking-[0.2em] text-foreground/40">Coalition Members</h4>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {selectedState.majorParties.map(p => (
-                            <span key={p} className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 font-bold text-sm">
+                            <span key={p} className="px-3 py-1 rounded-lg bg-white/10 border border-white/10 font-black text-[10px] tracking-widest uppercase">
                               {p}
                             </span>
                           ))}
                         </div>
                       </div>
-                      <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
+                      <div className="bg-white/5 rounded-2xl p-6 border border-white/5 hover:border-emerald-500/30 transition-colors">
                         <div className="flex items-center gap-3 mb-4">
                           <Globe className="w-5 h-5 text-emerald-500" />
-                          <h4 className="font-black text-xs uppercase tracking-widest text-foreground/40">Next Election</h4>
+                          <h4 className="font-black text-[9px] uppercase tracking-[0.2em] text-foreground/40">Electoral Window</h4>
                         </div>
                         <p className="text-2xl font-black text-primary">{selectedState.nextElection}</p>
                       </div>
                     </div>
 
                     <div className="flex gap-4">
-                      <button className="btn-primary flex-1 py-4 font-black tracking-widest uppercase text-sm flex items-center justify-center gap-2">
-                        <History className="w-4 h-4" /> Political History
+                      <button className="btn-premium flex-1 !py-4 font-black tracking-[0.2em] uppercase text-xs flex items-center justify-center gap-3">
+                        <History className="w-4 h-4" /> RECONSTRUCT HISTORY
                       </button>
-                      <button className="glass py-4 px-6 rounded-xl border border-white/10 hover:border-primary/50 transition-colors">
+                      <button className="glass py-4 px-6 rounded-2xl border border-white/10 hover:border-primary/50 transition-all hover:scale-105" aria-label="Official Website">
                         <ExternalLink className="w-5 h-5" />
                       </button>
+                    </div>
+
+                    {/* SOURCE SECTION */}
+                    <div className="mt-12 pt-8 border-t border-white/5 flex items-center gap-3 opacity-40">
+                       <FileText className="w-4 h-4" />
+                       <span className="text-[10px] font-black tracking-widest uppercase">Source: ECI Statistical Reports 2024 • Verified by AI Guide</span>
                     </div>
                   </div>
                 </motion.div>
               ) : (
-                <div className="glass rounded-[2rem] p-12 border-dashed border-white/10 h-full flex flex-col items-center justify-center text-center opacity-50">
-                  <Globe className="w-20 h-20 text-foreground/20 mb-6 animate-pulse" />
-                  <h3 className="text-2xl font-black mb-2">Select a Sector</h3>
-                  <p className="text-foreground/40 max-w-xs">Pick a state from the intelligence feed to view detailed political insights.</p>
+                <div className="glass rounded-[2.5rem] p-12 border-dashed border-white/10 h-full flex flex-col items-center justify-center text-center">
+                  <div className="w-24 h-24 rounded-full bg-primary/5 flex items-center justify-center mb-8 border border-primary/10">
+                    <Globe className="w-12 h-12 text-primary/40 animate-pulse" />
+                  </div>
+                  <h3 className="text-3xl font-black mb-4">Initialize Sector Scan</h3>
+                  <p className="text-foreground/40 max-w-sm leading-relaxed">Select a state from the intelligence feed to authorize deep-dive data retrieval.</p>
                 </div>
               )}
             </AnimatePresence>
-          </div>
-        </div>
+          </section>
+        </main>
       </div>
 
       <style jsx>{`

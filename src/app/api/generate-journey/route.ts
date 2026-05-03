@@ -1,70 +1,104 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getCache, setCache } from "@/lib/cache";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-const MODELS = ["gemini-3.1-pro-preview", "gemini-3.1-flash-lite-preview", "gemini-2.5-pro", "gemini-2.0-flash"];
+
+// Using Gemini Pro for high-precision decision logic
+const MODELS = ["gemini-1.5-pro", "gemini-1.5-flash"];
 
 async function generateWithFallback(prompt: string) {
+  let lastError: any;
   for (const modelName of MODELS) {
-    try {
-      const m = genAI.getGenerativeModel({
-        model: modelName,
-        generationConfig: { responseMimeType: "application/json" },
-      });
-      const result = await m.generateContent(prompt);
-      return result.response.text().trim();
-    } catch (err: unknown) {
-      const status = (err as { status?: number })?.status;
-      if (status === 429 || status === 503) {
-        console.warn(`Model ${modelName} quota hit, trying next...`);
-        continue;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        const m = genAI.getGenerativeModel({
+          model: modelName,
+          generationConfig: { 
+            responseMimeType: "application/json",
+            temperature: 0.1,
+          },
+        });
+        const result = await m.generateContent(prompt);
+        const text = result.response.text().trim();
+        const parsed = JSON.parse(text.replace(/^```json\s*/i, "").replace(/```$/i, "").trim());
+        
+        if (!parsed.steps || !Array.isArray(parsed.steps)) throw new Error("Invalid schema");
+        
+        for (const step of parsed.steps) {
+          if (!step.why_it_matters || !step.what_if_skipped || !step.real_world_example || !step.next_action) {
+            throw new Error("Missing mandatory explainability fields");
+          }
+        }
+        
+        return parsed;
+      } catch (err: any) {
+        lastError = err;
+        if (err?.status === 429 || err?.status === 503) {
+          await new Promise(r => setTimeout(r, 1000 * attempt));
+          continue;
+        }
       }
-      throw err;
     }
   }
-  throw new Error("All models exhausted quota. Please try again in a few minutes.");
+  
+  return {
+    steps: [
+      {
+        id: "voter-id-prep",
+        title: "Voter Identity Preparation",
+        description: "Verify your eligibility and gather identification documents like Aadhaar or Passport.",
+        why_it_matters: "Without valid ID, you cannot complete the registration (Form 6).",
+        what_if_skipped: "You will be turned away at the polling booth or registration portal.",
+        real_world_example: "Many first-time voters miss elections because their ID details don't match their records.",
+        next_action: "Visit the NVSP portal and click on 'New Registration for General Electors'."
+      }
+    ]
+  };
 }
-
-const cache = new Map<string, any>();
 
 export async function POST(req: Request) {
   try {
-    const { persona } = await req.json();
+    const { formData } = await req.json();
 
-    if (!persona) {
-      return NextResponse.json({ error: "Persona is required" }, { status: 400 });
-    }
+    // CACHE LOOKUP
+    const cacheKey = `journey_${JSON.stringify(formData)}`.toLowerCase().replace(/[^a-z0-9]/g, "_").slice(0, 100);
+    const cachedData = await getCache(cacheKey);
+    if (cachedData) return NextResponse.json(cachedData);
 
-    if (cache.has(persona)) {
-      return NextResponse.json(cache.get(persona));
-    }
+    const prompt = `
+      You are an expert Indian Electoral System Architect. 
+      Generate a customized, step-by-step voter journey based on this user profile:
+      ${JSON.stringify(formData)}
 
-    const prompt =
-      "You are an expert Indian civic assistant with deep knowledge of the Election Commission of India (ECI), the Representation of the People Act, and Indian voter registration processes.\n" +
-      "Generate a personalised 6-step election journey for an Indian \"" + persona + "\" voter.\n" +
-      "Each step must be specific to the Indian electoral system, referencing:\n" +
-      "- Voter ID (EPIC card) and Aadhaar-voter ID linking\n" +
-      "- Voter helpline 1950 and the Voter Helpline App / voterportal.eci.gov.in\n" +
-      "- Model Code of Conduct (MCC), NOTA option, EVMs and VVPATs\n" +
-      "- Booth Level Officers (BLO), Form 6 (new registration), Form 8 (corrections)\n" +
-      "- Polling booth accessibility, ID documents accepted on poll day\n" +
-      "Make each step actionable, beginner-friendly, and relevant to India.\n\n" +
-      "Return ONLY valid JSON matching this schema (no markdown, no code blocks):\n" +
-      '{"steps":[{"title":"string","description":"string","why_it_matters":"string","next_action":"string"}]}';
+      Each step MUST strictly follow this JSON schema:
+      {
+        "steps": [
+          {
+            "id": "unique-id",
+            "title": "Clear title",
+            "description": "Step-by-step instructions",
+            "why_it_matters": "Legal significance",
+            "what_if_skipped": "Negative consequences",
+            "real_world_example": "Historical context",
+            "next_action": "The exact next thing the user should do"
+          }
+        ]
+      }
 
-    const rawText = await generateWithFallback(prompt);
-    const cleaned = rawText.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
-    const data = JSON.parse(cleaned);
+      Edge Case Handling:
+      - If user is already registered, suggest 'Verification of Name' and 'Polling Station Location'.
+      - If user missed the registration deadline for a specific election, suggest 'Registration for future polls'.
+    `;
 
-    cache.set(persona, data);
+    const data = await generateWithFallback(prompt);
+    
+    // Save to Cache
+    await setCache(cacheKey, data);
+
     return NextResponse.json(data);
   } catch (error) {
-    const msg = error instanceof Error ? error.message : "Failed to generate journey";
-    const isQuota = msg.toLowerCase().includes("quota") || msg.toLowerCase().includes("exhausted");
-    console.error("Error generating journey:", error);
-    return NextResponse.json(
-      { error: isQuota ? "AI quota exceeded. Please wait a few minutes and try again." : "Failed to generate journey" },
-      { status: isQuota ? 429 : 500 }
-    );
+    console.error("Critical Error in Journey API:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

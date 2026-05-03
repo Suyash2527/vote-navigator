@@ -612,3 +612,40 @@ body {
   background-size: 40px 40px;
 }
 
+/* --- ACCESSIBILITY & HIGH CONTRAST --- */
+@media (prefers-contrast: more) {
+  :root {
+    --primary: #FF8C00;
+    --accent: #00FF00;
+    --background: #000000;
+    --foreground: #FFFFFF;
+    --card-border: #FFFFFF;
+  }
+}
+
+.focus-ring:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 4px;
+}
+
+/* --- SKELETON LOADERS --- */
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* --- ARIA UTILITIES --- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;
+}
+
