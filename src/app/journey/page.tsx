@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   CheckCircle2, Circle, ChevronRight, Info, 
   AlertTriangle, Lightbulb, ArrowRight,
-  ShieldCheck, Loader2, Sparkles, BookOpen
+  ShieldCheck, Loader2, Sparkles, BookOpen, Zap
 } from "lucide-react";
 import { useGame } from "@/lib/GameContext";
 
