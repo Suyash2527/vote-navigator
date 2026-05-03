@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-const MODELS = ["gemini-2.0-flash", "gemini-2.5-flash-lite", "gemini-flash-latest"];
+const MODELS = ["gemini-3.1-flash-lite-preview", "gemini-2.0-flash", "gemini-2.5-flash-lite"];
 
 async function generateWithFallback(prompt: string) {
   for (const modelName of MODELS) {

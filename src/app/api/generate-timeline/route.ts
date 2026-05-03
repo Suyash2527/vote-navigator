@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-const MODELS = ["gemini-2.0-flash", "gemini-2.5-flash-lite", "gemini-flash-latest"];
+const MODELS = ["gemini-3.1-pro-preview", "gemini-3.1-flash-lite-preview", "gemini-2.5-pro", "gemini-2.0-flash"];
 
 async function generateWithFallback(prompt: string) {
   for (const modelName of MODELS) {
@@ -25,6 +25,8 @@ async function generateWithFallback(prompt: string) {
   throw new Error("All models exhausted quota. Please try again in a few minutes.");
 }
 
+const cache = new Map<string, any>();
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -34,6 +36,11 @@ export async function POST(req: Request) {
 
     if (!state || !electionType || !year) {
       return NextResponse.json({ error: "Missing required fields: state, electionType, year" }, { status: 400 });
+    }
+
+    const cacheKey = `${state}-${electionType}-${year}`;
+    if (cache.has(cacheKey)) {
+      return NextResponse.json(cache.get(cacheKey));
     }
 
     const prompt =
@@ -50,12 +57,13 @@ export async function POST(req: Request) {
       "5. Vote counting and result declaration\n\n" +
       "Use dates appropriate for the given year. Reference ECI norms (e.g., MCC kicks in on schedule announcement).\n" +
       "Return ONLY valid JSON matching this exact schema, no markdown, no code blocks:\n" +
-      '{"events":[{"title":"string","date":"string","description":"string"}]}';
+      '{"events":[{"title":"string","date":"string","description":"string","why_it_matters":"string","next_action":"string"}]}';
 
     const rawText = await generateWithFallback(prompt);
     const cleaned = rawText.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
     const data = JSON.parse(cleaned);
 
+    cache.set(cacheKey, data);
     return NextResponse.json(data);
   } catch (error) {
     const msg = error instanceof Error ? error.message : "Failed to generate timeline";

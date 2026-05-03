@@ -1,29 +1,62 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
 
 :root {
-  --background: #06071a;
-  --foreground: #e8eaf6;
-  --primary: #6c63ff;
+  /* ── Indian Election Theme ──────────────────────────────
+     Palette: Saffron (primary) · India Green (accent)
+     Ashoka Blue (highlight) · Deep Navy (background)
+     Inspired by the Indian tricolor & ECI branding.
+  ─────────────────────────────────────────────────────── */
+  --background: #070A15;          /* Deep Midnight Navy */
+  --foreground: #F5F0E8;          /* Warm Parchment White */
+  --primary: #FF6B35;             /* Saffron Orange */
   --primary-foreground: #ffffff;
-  --primary-glow: rgba(108, 99, 255, 0.4);
-  --secondary: #111230;
-  --secondary-foreground: #c5c8f0;
-  --accent: #00d4ff;
+  --primary-glow: rgba(255, 107, 53, 0.45);
+  --secondary: #0F1525;           /* Navy surface */
+  --secondary-foreground: #D4C8B8;
+  --accent: #138808;              /* India Green */
   --accent-foreground: #ffffff;
-  --accent-glow: rgba(0, 212, 255, 0.3);
-  --card: #0d0e2e;
-  --card-foreground: #e8eaf6;
-  --border: rgba(108, 99, 255, 0.2);
-  --ring: rgba(108, 99, 255, 0.5);
-  --success: #00e676;
-  --warning: #ffd740;
-  --danger: #ff5252;
-  --muted: #1a1b3e;
-  --muted-foreground: #8890b5;
-  --surface: rgba(13, 14, 46, 0.7);
+  --accent-glow: rgba(19, 136, 8, 0.35);
+  --highlight: #06038D;           /* Ashoka Chakra Blue */
+  --highlight-glow: rgba(6, 3, 141, 0.4);
+  --gold: #F4C430;                /* ECI Gold */
+  --card: #0C1020;                /* Dark Navy card */
+  --card-foreground: #F5F0E8;
+  --border: rgba(255, 107, 53, 0.18);
+  --ring: rgba(255, 107, 53, 0.5);
+  --success: #138808;
+  --warning: #F4C430;
+  --danger: #E63946;
+  --muted: #141A2E;
+  --muted-foreground: #8A9BB5;
+  --surface: rgba(12, 16, 32, 0.75);
 }
 
+/* Accessibility Variables */
+.high-contrast {
+  --background: #000000;
+  --foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --secondary: #222222;
+  --secondary-foreground: #ffffff;
+  --accent: #ffff00;
+  --accent-foreground: #000000;
+  --card: #111111;
+  --card-foreground: #ffffff;
+  --border: #ffffff;
+  --ring: #ffffff;
+  --muted: #333333;
+  --muted-foreground: #cccccc;
+}
+
+html.text-large {
+  font-size: 112.5%; /* 18px */
+}
+
+html.text-xlarge {
+  font-size: 125%; /* 20px */
+}
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -59,80 +92,85 @@ body {
   position: relative;
 }
 
-/* Animated mesh background */
+/* ── Indian Tricolor Background ── */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(108, 99, 255, 0.15) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0, 212, 255, 0.1) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(108, 99, 255, 0.05) 0%, transparent 70%);
+    /* Saffron glow — top right (Dawn / Courage) */
+    radial-gradient(ellipse 70% 45% at 85% 0%, rgba(255, 107, 53, 0.18) 0%, transparent 60%),
+    /* India Green glow — bottom left (Faith / Chivalry) */
+    radial-gradient(ellipse 65% 40% at 10% 100%, rgba(19, 136, 8, 0.14) 0%, transparent 60%),
+    /* Ashoka Blue — center (Truth / Dharma Chakra) */
+    radial-gradient(ellipse 45% 35% at 50% 50%, rgba(6, 3, 141, 0.07) 0%, transparent 70%),
+    /* Gold shimmer — top left */
+    radial-gradient(ellipse 30% 20% at 5% 5%, rgba(244, 196, 48, 0.06) 0%, transparent 50%);
   pointer-events: none;
   z-index: -1;
 }
 
-/* Floating grid lines */
+/* Subtle grid — evokes ballot paper / ECI document feel */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(108, 99, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(108, 99, 255, 0.04) 1px, transparent 1px);
-  background-size: 64px 64px;
+    linear-gradient(rgba(255, 107, 53, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 107, 53, 0.03) 1px, transparent 1px);
+  background-size: 56px 56px;
   pointer-events: none;
   z-index: -1;
 }
 
-/* ── Glass card ── */
+/* ── Glass card — warm navy with saffron tint ── */
 .glass {
-  background: rgba(13, 14, 46, 0.6);
+  background: rgba(12, 16, 32, 0.65);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(108, 99, 255, 0.15);
+  border: 1px solid rgba(255, 107, 53, 0.12);
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 200, 150, 0.06);
 }
 
 .glass-hover {
   transition: all 0.3s ease;
 }
 .glass-hover:hover {
-  background: rgba(13, 14, 46, 0.8);
-  border-color: rgba(108, 99, 255, 0.4);
+  background: rgba(12, 16, 32, 0.85);
+  border-color: rgba(255, 107, 53, 0.35);
   box-shadow:
-    0 16px 48px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(108, 99, 255, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 16px 48px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 107, 53, 0.15),
+    inset 0 1px 0 rgba(255, 200, 150, 0.08);
   transform: translateY(-2px);
 }
 
 /* ── Glow utilities ── */
 .glow-primary {
-  box-shadow: 0 0 30px var(--primary-glow), 0 0 60px rgba(108, 99, 255, 0.15);
+  box-shadow: 0 0 30px var(--primary-glow), 0 0 60px rgba(255, 107, 53, 0.12);
 }
 .glow-accent {
-  box-shadow: 0 0 30px var(--accent-glow), 0 0 60px rgba(0, 212, 255, 0.08);
+  box-shadow: 0 0 30px var(--accent-glow), 0 0 60px rgba(19, 136, 8, 0.08);
 }
 .text-glow {
-  text-shadow: 0 0 40px rgba(108, 99, 255, 0.6);
+  text-shadow: 0 0 40px rgba(255, 107, 53, 0.7), 0 0 80px rgba(255, 107, 53, 0.3);
 }
 
-/* ── Gradient text ── */
+/* ── Gradient text — Indian Tricolor ── */
 .gradient-text {
-  background: linear-gradient(135deg, #6c63ff 0%, #00d4ff 50%, #a78bfa 100%);
+  background: linear-gradient(135deg, #FF6B35 0%, #F4C430 40%, #138808 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* ── Buttons ── */
+/* ── Buttons — Saffron CTA ── */
 .btn-primary {
-  background: linear-gradient(135deg, #6c63ff, #5b54ef);
-  color: white;
-  font-weight: 600;
+  background: linear-gradient(135deg, #FF6B35, #E85D25);
+  color: #ffffff;
+  font-weight: 700;
   border-radius: 12px;
   padding: 12px 28px;
   border: none;
@@ -140,13 +178,13 @@ body::after {
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(108, 99, 255, 0.4);
+  box-shadow: 0 4px 18px rgba(255, 107, 53, 0.45);
 }
 .btn-primary::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  background: linear-gradient(135deg, rgba(255,255,255,0.18), transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -154,7 +192,7 @@ body::after {
   opacity: 1;
 }
 .btn-primary:hover {
-  box-shadow: 0 8px 25px rgba(108, 99, 255, 0.6);
+  box-shadow: 0 8px 28px rgba(255, 107, 53, 0.65);
   transform: translateY(-1px);
 }
 .btn-primary:active {
@@ -167,20 +205,20 @@ body::after {
   font-weight: 600;
   border-radius: 12px;
   padding: 12px 28px;
-  border: 1px solid rgba(108, 99, 255, 0.3);
+  border: 1px solid rgba(255, 107, 53, 0.3);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 .btn-secondary:hover {
-  border-color: rgba(108, 99, 255, 0.6);
-  background: rgba(108, 99, 255, 0.08);
+  border-color: rgba(255, 107, 53, 0.6);
+  background: rgba(255, 107, 53, 0.06);
 }
 
 /* ── Form inputs ── */
 .input-field {
   width: 100%;
-  background: rgba(13, 14, 46, 0.8);
-  border: 1px solid rgba(108, 99, 255, 0.2);
+  background: rgba(8, 12, 24, 0.85);
+  border: 1px solid rgba(255, 107, 53, 0.18);
   border-radius: 12px;
   padding: 14px 18px;
   color: var(--foreground);
@@ -193,8 +231,8 @@ body::after {
   color: var(--muted-foreground);
 }
 .input-field:focus {
-  border-color: rgba(108, 99, 255, 0.6);
-  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15);
+  border-color: rgba(255, 107, 53, 0.55);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.12);
 }
 
 /* ── Scrollbar ── */
@@ -206,11 +244,11 @@ body::after {
   background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(108, 99, 255, 0.4);
+  background: rgba(255, 107, 53, 0.4);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(108, 99, 255, 0.7);
+  background: rgba(255, 107, 53, 0.7);
 }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -218,9 +256,9 @@ body::after {
 
 /* ── Pulse ring animation ── */
 @keyframes pulseRing {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(108, 99, 255, 0.5); }
-  70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(108, 99, 255, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(108, 99, 255, 0); }
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.5); }
+  70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(255, 107, 53, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 107, 53, 0); }
 }
 
 /* ── Timeline connector ── */
@@ -230,7 +268,7 @@ body::after {
   left: calc(100% + 8px);
   width: 32px;
   height: 2px;
-  background: linear-gradient(90deg, rgba(108, 99, 255, 0.6), rgba(0, 212, 255, 0.4));
+  background: linear-gradient(90deg, rgba(255, 107, 53, 0.6), rgba(19, 136, 8, 0.4));
   pointer-events: none;
 }
 
@@ -244,9 +282,9 @@ body::after {
   z-index: -1;
   animation: drift 12s ease-in-out infinite alternate;
 }
-.orb-1 { width: 400px; height: 400px; background: #6c63ff; top: -100px; left: -100px; }
-.orb-2 { width: 300px; height: 300px; background: #00d4ff; bottom: -80px; right: -80px; animation-delay: -6s; }
-.orb-3 { width: 200px; height: 200px; background: #a78bfa; top: 40%; left: 60%; animation-delay: -3s; }
+.orb-1 { width: 420px; height: 420px; background: #FF6B35; top: -120px; right: -80px; }   /* Saffron */
+.orb-2 { width: 320px; height: 320px; background: #138808; bottom: -100px; left: -80px; animation-delay: -6s; }  /* India Green */
+.orb-3 { width: 220px; height: 220px; background: #06038D; top: 45%; left: 55%; animation-delay: -3s; }          /* Ashoka Blue */
 
 @keyframes drift {
   0% { transform: translate(0, 0) scale(1); }
@@ -258,7 +296,7 @@ body::after {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  border: 2px solid rgba(108, 99, 255, 0.4);
+  border: 2px solid rgba(255, 107, 53, 0.35);
   background: var(--background);
   transition: all 0.3s ease;
 }
@@ -287,3 +325,128 @@ body::after {
   0%, 80%, 100% { transform: translateY(0); opacity: 0.6; }
   40% { transform: translateY(-8px); opacity: 1; }
 }
+
+/* ══════════════════════════════════
+   🎮 GAME LAYER — Global Gamification
+   ══════════════════════════════════ */
+
+/* Scanlines overlay merged into body::after above (grid takes priority) */
+/* Keeping a very faint horizontal line feel via the grid */
+
+/* Neon glow text utility — Saffron */
+.neon-text {
+  text-shadow:
+    0 0 8px rgba(255, 107, 53, 0.9),
+    0 0 20px rgba(255, 107, 53, 0.6),
+    0 0 40px rgba(255, 107, 53, 0.3);
+}
+/* Neon glow text — India Green */
+.neon-text-cyan {
+  text-shadow:
+    0 0 8px rgba(19, 136, 8, 0.9),
+    0 0 20px rgba(19, 136, 8, 0.6);
+}
+
+/* Neon border glow — Saffron */
+.neon-border {
+  box-shadow:
+    0 0 10px rgba(255, 107, 53, 0.5),
+    inset 0 0 8px rgba(255, 107, 53, 0.05);
+}
+/* Neon border — India Green */
+.neon-border-cyan {
+  box-shadow:
+    0 0 10px rgba(19, 136, 8, 0.5),
+    inset 0 0 8px rgba(19, 136, 8, 0.04);
+}
+
+/* Pulsing neon border animation — Saffron pulse */
+@keyframes neonPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(255,107,53,0.4), 0 0 20px rgba(255,107,53,0.2); }
+  50% { box-shadow: 0 0 18px rgba(255,107,53,0.8), 0 0 40px rgba(255,107,53,0.4); }
+}
+.pulse-neon {
+  animation: neonPulse 2.5s ease-in-out infinite;
+}
+
+/* Game corner bracket ornament */
+.game-corner {
+  position: relative;
+}
+.game-corner::before,
+.game-corner::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: rgba(255, 107, 53, 0.4);
+  border-style: solid;
+}
+.game-corner::before {
+  top: 6px;
+  left: 6px;
+  border-width: 2px 0 0 2px;
+  border-radius: 3px 0 0 0;
+}
+.game-corner::after {
+  bottom: 6px;
+  right: 6px;
+  border-width: 0 2px 2px 0;
+  border-radius: 0 0 3px 0;
+}
+
+/* XP bar shine animation */
+@keyframes xpShine {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.xp-bar {
+  background: linear-gradient(
+    90deg,
+    var(--primary) 0%,
+    var(--accent) 40%,
+    #fff6 50%,
+    var(--accent) 60%,
+    var(--primary) 100%
+  );
+  background-size: 200% auto;
+  animation: xpShine 3s linear infinite;
+}
+
+/* Glitch text effect */
+@keyframes glitch1 {
+  0%, 100% { clip-path: inset(0 0 98% 0); transform: translate(-2px, 0); }
+  25% { clip-path: inset(30% 0 50% 0); transform: translate(2px, 0); }
+  50% { clip-path: inset(70% 0 10% 0); transform: translate(-1px, 0); }
+  75% { clip-path: inset(50% 0 30% 0); transform: translate(1px, 0); }
+}
+.glitch {
+  position: relative;
+}
+.glitch::before {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: var(--accent);
+  opacity: 0.6;
+  animation: glitch1 4s steps(1) infinite;
+}
+
+/* Hex badge */
+.hex-badge {
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* Rank badge glow colors */
+.rank-gold   { box-shadow: 0 0 16px rgba(251,191,36,0.5); }
+.rank-silver { box-shadow: 0 0 16px rgba(156,163,175,0.5); }
+.rank-bronze { box-shadow: 0 0 16px rgba(180,83,9,0.5); }
+
+/* Grid overlay effect (very subtle) */
+.grid-overlay {
+  background-image:
+    linear-gradient(rgba(255, 107, 53, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 107, 53, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+

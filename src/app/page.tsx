@@ -48,10 +48,10 @@ export default function Home() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-medium text-primary mb-8 border border-primary/20"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-bold text-primary mb-8 border border-primary/30 neon-border tracking-widest uppercase"
         >
           <Sparkles className="w-4 h-4" />
-          Powered by Gemini AI
+          ⚡ Powered by Gemini AI
         </motion.div>
 
         <motion.h1
@@ -60,11 +60,11 @@ export default function Home() {
           transition={{ delay: 0.2, duration: 0.7 }}
           className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-6 leading-none"
         >
-          <span className="gradient-text text-glow">Aapka Vote.</span>
+          <span className="gradient-text text-glow neon-text">Aapka Vote.</span>
           <br />
           <span className="text-foreground/90">Aapki Awaaz.</span>
           <br />
-          <span className="gradient-text">Aapka Safar.</span>
+          <span className="gradient-text neon-text-cyan">Aapka Safar.</span>
         </motion.h1>
 
         <motion.p
@@ -127,6 +127,9 @@ export default function Home() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-black tracking-widest uppercase mb-4">
+            🎮 SELECT YOUR VOTER CLASS
+          </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Aap Kaun Hain? <span className="gradient-text">Personalise Karen.</span>
           </h2>
@@ -163,6 +166,31 @@ export default function Home() {
               </div>
             </motion.button>
           ))}
+        </motion.div>
+      </section>
+
+      {/* States Power Map teaser */}
+      <section className="px-4 pb-24">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="max-w-4xl mx-auto glass game-corner rounded-3xl p-8 md:p-12 border border-accent/20 neon-border-cyan text-center relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-primary/5 pointer-events-none" />
+          <div className="text-5xl mb-4">🗺️</div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-black tracking-widest uppercase mb-4">
+            NEW ZONE UNLOCKED
+          </div>
+          <h2 className="text-3xl md:text-4xl font-black mb-4 relative z-10">
+            India&apos;s <span className="neon-text-cyan" style={{color: "var(--accent)"}}>State Power Map</span>
+          </h2>
+          <p className="text-foreground/60 max-w-lg mx-auto mb-8 relative z-10">
+            Explore every Indian state — Chief Ministers, ruling parties, major political players, assembly seat counts, and upcoming election battles. All in one place.
+          </p>
+          <Link href="/states" className="btn-primary px-8 py-3 font-bold inline-flex items-center gap-2 relative z-10 neon-border">
+            <Map className="w-5 h-5" /> Explore State Power Map <ArrowRight className="w-5 h-5" />
+          </Link>
         </motion.div>
       </section>
     </div>
